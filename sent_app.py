@@ -1,6 +1,5 @@
 import streamlit as st
 from sentiment import sentiment
-from time import sleep
 
 if __name__ == '__main__':
     # print('Error: \n', file=open('log1.txt', 'w', encoding='utf-8', buffering=1, errors = 'errors'), flush=True)
@@ -22,10 +21,14 @@ if __name__ == '__main__':
     button = st.button('REVEAL SENTIMENT')
     if button:
         if not response:
-            st.warning('YOU HAVE NOT INPUTED ANYTHING!')
-            # with sleep(2):
+            st.warning('PLEASE INPUT TEXT')
             st.snow()
         else:
             SENTIMENT = sentiment.app_pred(response)
-            st.subheader(f'STATEMENT TENDS TO BE: {SENTIMENT}')
+            if SENTIMENT == "Positive":
+                st.badge(f'STATEMENT TENDS TO BE: {SENTIMENT}', color = 'orange')
+            elif SENTIMENT == 'Negative':
+                st.badge(f'STATEMENT TENDS TO BE: {SENTIMENT}', color='green')
+            else:
+                st.badge(f'STATEMENT TENDS TO BE: {SENTIMENT}', color='gray')
             
