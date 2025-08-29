@@ -23,8 +23,8 @@ if __name__ == '__main__':
     if button:
         if not response:
             st.warning('YOU HAVE NOT INPUTED ANYTHING!')
-            with sleep(2):
-                st.snow()
+            # with sleep(2):
+            st.snow()
         else:
             SENTIMENT = sentiment.app_pred(response)
             st.subheader(f'STATEMENT TENDS TO BE: {SENTIMENT}')
