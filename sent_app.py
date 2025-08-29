@@ -4,7 +4,7 @@ from time import sleep
 
 if __name__ == '__main__':
     # print('Error: \n', file=open('log1.txt', 'w', encoding='utf-8', buffering=1, errors = 'errors'), flush=True)
-    st.title('A SENTIMENT CHECKER FOR YORùbá SENTENCES'.upper())
+    st.title('A SENTIMENT CHECKER FOR YORùbá TEXT'.upper())
     col1, col2 = st.columns(2)
     choice = col1.toggle('FILE OR NOT?')
     if choice:
@@ -18,12 +18,12 @@ if __name__ == '__main__':
             del st.session_state.CONTENT
             st.session_state.CONTENT = tmp
             
-    response = col2.text_area(label = 'INPUT SENTENCE HERE')
+    response = col2.text_area(label = 'INPUT TEXT HERE')
     button = st.button('REVEAL SENTIMENT')
     if button:
         if not response:
+            st.warning('YOU HAVE NOT INPUTED ANYTHING!')
             with sleep(2):
-                st.warning('YOU HAVE NOT INPUTED ANYTHING!')
                 st.snow()
         else:
             SENTIMENT = sentiment.app_pred(response)
