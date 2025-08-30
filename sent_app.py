@@ -1,5 +1,6 @@
 import streamlit as st
 from sentiment import sentiment
+import re
 
 if __name__ == '__main__':
     # print('Error: \n', file=open('log1.txt', 'w', encoding='utf-8', buffering=1, errors = 'errors'), flush=True)
@@ -18,17 +19,38 @@ if __name__ == '__main__':
             st.session_state.CONTENT = tmp
             
     response = col2.text_area(label = 'INPUT TEXT HERE')
-    button = st.button('REVEAL SENTIMENT')
-    if button:
-        if not response:
-            st.warning('PLEASE INPUT TEXT')
-            st.snow()
-        else:
-            SENTIMENT = sentiment.app_pred(response)
-            if SENTIMENT == "Positive":
-                st.badge(f'STATEMENT TENDS TO BE: {SENTIMENT}', color = 'orange')
-            elif SENTIMENT == 'Negative':
-                st.badge(f'STATEMENT TENDS TO BE: {SENTIMENT}', color='green')
+    per_statement = st.toggle('REVEAL SENTIMENT PER STAMENT')
+    if not per_statement:
+        button = st.button('PREDICT SENTIMENT')
+        if button:
+            if not response:
+                st.warning('PLEASE INPUT TEXT')
+                st.snow()
             else:
-                st.badge(f'STATEMENT TENDS TO BE: {SENTIMENT}', color='gray')
-            
+                st.balloons()
+                SENTIMENT = sentiment.app_pred(response)
+                if SENTIMENT == "Positive":
+                    st.badge(f'STATEMENT TENDS TO BE: {SENTIMENT}', color = 'green')
+                elif SENTIMENT == 'Negative':
+                    st.badge(f'STATEMENT TENDS TO BE: {SENTIMENT}', color='orange')
+                else:
+                    st.badge(f'STATEMENT TENDS TO BE: {SENTIMENT}', color='gray')
+    else:
+        button = st.button('PREDICT SENTIMENT PER STATEMENT')
+        if button:
+            if not response:
+                st.warning('PLEASE INPUT TEXT')
+                st.snow()
+            else:
+                st.balloons()
+                statements = re.split(r'[.,?!]\s*', response)
+                x = 0
+                for i in statements[:-1]:
+                    SENTIMENT = sentiment.app_pred(i)
+                    if SENTIMENT == "Positive":
+                        st.badge(f'STATEMENT {x+1} TENDS TO BE: {SENTIMENT}', color = 'green')
+                    elif SENTIMENT == 'Negative':
+                        st.badge(f'STATEMENT {x+1} TENDS TO BE: {SENTIMENT}', color='orange')
+                    else:
+                        st.badge(f'STATEMENT {x+1} TENDS TO BE: {SENTIMENT}', color='gray')
+                    x+=1
