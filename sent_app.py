@@ -24,7 +24,7 @@ if __name__ == '__main__':
             
     response = col2.text_area(label = 'INPUT TEXT HERE')
     '___'
-    per_statement = st.toggle('REVEAL SENTIMENT PER STAMENT')
+    per_statement = st.toggle('REVEAL SENTIMENT PER STATEMENT')
     if not per_statement:
         button = st.button('PREDICT OVERALL SENTIMENT')
         if button:
