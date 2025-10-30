@@ -1,5 +1,5 @@
 import streamlit as st
-from sentiment import sentiment
+from yorsent import sentiment
 import re
 
 if __name__ == '__main__':
