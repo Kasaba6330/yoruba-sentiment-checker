@@ -18,7 +18,7 @@ yoruba_stopwords = set([
 ])
 
 # Positive, Negative, and Neutral Words Lists
-positive_words = ["ayọ̀", "ire", "ìbùkún", "àlàáfíà", "gbèjà", "ìdùnnú", "ìlera", "oríire", "dáadáa", "dada",
+positive_words = [i.lower() for i in ["ayọ̀", "ire", "ìbùkún", "àlàáfíà", "gbèjà", "ìdùnnú", "ìlera", "oríire", "dáadáa", "dada",
                   "ìgbádùn", "àjọyọ̀", "àjọ̀dún", "òmìnira", "ìtẹ̀síwájú", "ìrọ̀rùn", "àǹfààní", "làmìlaaka", "ìlọsíwájú",
                   "ìmọrírì", "àṣeyọrí", "ròkè", "pẹ́ẹ́lí", "pèsè", "ìrètí", "Ayọ̀", "Ire", "Adùn", "Ajé", "Ìmọ́lẹ̀", "Ọrọ̀", "Sùúrù", "Ọ̀rẹ́", "Akínkanjú", "Àṣeyọrí",
                   "Òtítọ́", "Ìrẹ̀lẹ̀", "Ìlera", "Itẹríba", "Ìtẹ́lọ́rùn", "Ìdẹ̀ra", "Fẹ́ràn", "Eré", "Àlìkámà",
@@ -35,8 +35,8 @@ positive_words = ["ayọ̀", "ire", "ìbùkún", "àlàáfíà", "gbèjà", "ìd
                   "Rere/dídára", "Ìlera", "Òtímí", "Ìgboyà", "Ìmólè", "Tutù", "Wùrà", "Rere", "Ayò", "Ìyè",
                   "Rere", "Ìtura", "Èrín", "Ìlera", "Ìmólè", "Òré", "Orò", "Olórò", "Sàn", "Adún", "Ìgbádùn",
                   "Òpò", "Ní", "Rewá", "Omo", "Gbón", "Àdúrà"
-]
-negative_words = ["ibi", "kú", "ìpọ́njú", "àìbàlẹ̀-ọkàn", "ogun", "ìbànújẹ́", "ikú", "àìní", "àìsàn", "àìlera",
+]]
+negative_words = [i.lower() for i in ["ibi", "kú", "ìpọ́njú", "àìbàlẹ̀-ọkàn", "ogun", "ìbànújẹ́", "ikú", "àìní", "àìsàn", "àìlera",
                   "ọ̀fọ̀", "òfò", "ìfòòró", "burú", "burúkú", "rògbòdìyàn", "wàhálà", "ìdààmú", "ìwọ́de", "ìfẹ̀hónúhàn",
                   "ìfàsẹ́yìn", "àìbìkítà", "ẹkún", "ọ̀wọ́ngógó", "ìpèníjà", "èèṣì", "àìrajaja", "léèmọ̀", "ìjìyà", "ẹ̀wọ̀n", "ìṣekúpa",
                   "Ìbànújẹ́", "Ibi", "Ìkorò", "Òkùtà", "Òkùnkùn", "Òsì", "Ìbínú", "Ọ̀tá", "Ọ̀lẹ", "Àṣetì",
@@ -62,9 +62,9 @@ negative_words = ["ibi", "kú", "ìpọ́njú", "àìbàlẹ̀-ọkàn", "ogun",
                   "Ìgbéraga", "Àníyàn", "Ibanuje", "Irora", "Itiju", "Iberu", "Idaamu", "Egan", "Ija", "Kabamo",
                   "Ibinu", "Ika", "ifarapa", "Aiseyori", "Abuku", "Ailera", "Ote", "Ifekufe", "Ikorira", "Aibowo",
                   "Buburu", "Okunkun"
-]
-neutral_words = ["wa", "ni", "orukọ", "ṣe", "wọn", "pe", "a", "ti", "lati", "si", "gẹgẹ", "bi", "bá", "lati", "de", "le", "wá",
-                 "yi", "yìí", "náà", "lẹ́yìn", "kan", "tí", "o", "a", "kì", "nkan", "lọ", "fi", "ṣe", "kó", "tó", "wọlé"]
+]]
+neutral_words = [i.lower() for i in ["wa", "ni", "orukọ", "ṣe", "wọn", "pe", "a", "ti", "lati", "si", "gẹgẹ", "bi", "bá", "lati", "de", "le", "wá",
+                 "yi", "yìí", "náà", "lẹ́yìn", "kan", "tí", "o", "a", "kì", "nkan", "lọ", "fi", "ṣe", "kó", "tó", "wọlé"]]
 
 def preprocess_text(text):
     """ Converts text to lowercase, removes punctuation, tokenizes words, and filters out Yoruba stopwords. """

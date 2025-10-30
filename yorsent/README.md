@@ -7,7 +7,7 @@ Hybrid Architecture: Integrates a comprehensive, hand-curated Yorùbá sentiment
 
 **Web Application:** A user-friendly Streamlit web app for real-time sentiment analysis of text or uploaded files. https://yoruba-sentiment-checker.streamlit.app/
 
-**Public Resources:** Provides a valuable public sentiment lexicon for Yorùbá to support further NLP research.
+**Public Resources:** Provides a valuable public sentiment lexicon and sentiment analysis language model for Yorùbá to support further NLP research.
 
 **Reproducible Research:** Complete code and methodology are provided for full transparency and reproducibility.
 
