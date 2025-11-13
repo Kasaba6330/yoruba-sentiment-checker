@@ -26,8 +26,11 @@ Using the wildcard ('*') imports the following, to import one or more specific f
 `pip install yorsent`
 
 `from yorsent import *`
+
 `text = 'Òru là ń ṣ'èkà, ẹni tí ó bá ṣe é lọ́sàn-án ò ní fi ara ire lọ.'`
+
 `sent = app_pred(text)`
+
 `print(sent)`
 
 
