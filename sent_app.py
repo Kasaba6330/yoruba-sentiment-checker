@@ -1,5 +1,5 @@
 import streamlit as st
-from yorsent import sentiment
+from yorsent import yorsent
 import re
 
 if __name__ == '__main__':
@@ -38,7 +38,7 @@ if __name__ == '__main__':
                 st.snow()
             else:
                 st.balloons()
-                SENTIMENT = sentiment.app_pred(st.session_state.CONTENT)
+                SENTIMENT = yorsent.app_pred(st.session_state.CONTENT)
                 if SENTIMENT == "Positive":
                     st.badge(f'OVERALL STATEMENT TENDS TO BE: {SENTIMENT}', color = 'green')  
                 elif SENTIMENT == 'Negative':
@@ -64,7 +64,7 @@ if __name__ == '__main__':
                 statements = re.split(r'[.,?!]\s*', st.session_state.CONTENT)
                 x = 0
                 for i in statements[:-1]:
-                    SENTIMENT = sentiment.app_pred(i)
+                    SENTIMENT = yorsent.app_pred(i)
                     if SENTIMENT == "Positive":
                         st.badge(f'STATEMENT {x+1} TENDS TO BE: {SENTIMENT}', color = 'green')
                     elif SENTIMENT == 'Negative':

@@ -3,3 +3,5 @@ new_env/
 abeeb.txt
 tmp.py
 test.ipynb
+sentiment_model.pkl
+vectorizer.pkl
