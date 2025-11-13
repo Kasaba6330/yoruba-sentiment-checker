@@ -1,25 +1,14 @@
-import joblib
-from pathlib import Path
 import string
-
-model = 'sentiment_model.pkl'
-vectorizer = 'vectorizer.pkl'
-
-for i in Path.cwd().rglob('yorsent/sentiment_model.pkl'):
-    if i:
-        model_path = i
-    else:
-        continue
-    
-for i in Path.cwd().rglob('yorsent/vectorizer.pkl'):
-    if i:
-        vectorizer_path = i
-    else:
-        continue
-
-sentiment_model = joblib.load(model_path)
-vectorizer = joblib.load(vectorizer_path)
-
+from pathlib import Path
+import re
+from collections import Counter
+from sklearn.model_selection import train_test_split
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import classification_report, accuracy_score
+import pickle
+import pandas as pd
+ 
 # Yoruba Stopwords List
 yoruba_stopwords = set([
     "ni", "ati", "sí", "lori", "gbogbo", "sugbon", "pẹlu", "fún", "nitori", "mo", "a",
@@ -28,6 +17,7 @@ yoruba_stopwords = set([
     "ní", "tí", "ti", "bí", "tilẹ̀", "jẹ́pé", "nígbà", "nígbàtí", "yóò", "máa", "màá", "ń", "náà", "yìí", "kí", "yẹn", "si"
 ])
 
+# Positive, Negative, and Neutral Words Lists
 positive_words = [i.lower() for i in ["ayọ̀", "ire", "ìbùkún", "àlàáfíà", "gbèjà", "ìdùnnú", "ìlera", "oríire", "dáadáa", "dada",
                   "ìgbádùn", "àjọyọ̀", "àjọ̀dún", "òmìnira", "ìtẹ̀síwájú", "ìrọ̀rùn", "àǹfààní", "làmìlaaka", "ìlọsíwájú",
                   "ìmọrírì", "àṣeyọrí", "ròkè", "pẹ́ẹ́lí", "pèsè", "ìrètí", "Ayọ̀", "Ire", "Adùn", "Ajé", "Ìmọ́lẹ̀", "Ọrọ̀", "Sùúrù", "Ọ̀rẹ́", "Akínkanjú", "Àṣeyọrí",
@@ -76,15 +66,18 @@ negative_words = [i.lower() for i in ["ibi", "kú", "ìpọ́njú", "àìbàlẹ
 neutral_words = [i.lower() for i in ["wa", "ni", "orukọ", "ṣe", "wọn", "pe", "a", "ti", "lati", "si", "gẹgẹ", "bi", "bá", "lati", "de", "le", "wá",
                  "yi", "yìí", "náà", "lẹ́yìn", "kan", "tí", "o", "a", "kì", "nkan", "lọ", "fi", "ṣe", "kó", "tó", "wọlé"]]
 
-
-
 def preprocess_text(text):
     """ Converts text to lowercase, removes punctuation, tokenizes words, and filters out Yoruba stopwords. """
     text = text.lower()
     text = text.translate(str.maketrans('', '', string.punctuation))
     tokens = text.split(' ')
     filtered_tokens = [word for word in tokens if word not in yoruba_stopwords]
-    return ' '.join(filtered_tokens) 
+    return ' '.join(filtered_tokens)
+
+def most_frequent_words(tokens, n=10):
+    """ Computes and returns the top N most frequent words using NLTK and Counter. """
+    word_freq = Counter(tokens)
+    return word_freq.most_common(n)
 
 def hybrid_predict(text):
     """
@@ -109,6 +102,71 @@ def hybrid_predict(text):
             return 2 # Neutral
         return model_prediction
 
+def predict_paragraph(paragraph):
+    """
+    Predicts the sentiment of a full paragraph, providing counts for positive and negative words.
+    """
+    processed_text = preprocess_text(paragraph)
+    tokens = processed_text.split()
+    pos_count = sum(1 for word in tokens if word in positive_words)
+    neg_count = sum(1 for word in tokens if word in negative_words)
+
+    prediction = hybrid_predict(paragraph)
+
+    if prediction == 1:
+        sentiment_label = "Positive"
+    elif prediction == 0:
+        sentiment_label = "Negative"
+    else:
+        sentiment_label = "Neutral"
+
+    return pos_count, neg_count, sentiment_label
+
+
+train_data = pd.read_csv('data/train_new.csv')
+test_data = pd.read_csv('data/test_new.csv')
+
+# Convert to DataFrame
+data = pd.concat([train_data, test_data], axis=0).reset_index(drop=True)
+
+# Data Preparation for Model Training
+# Preprocess the reviews
+data['tweet'] = data['tweet'].apply(preprocess_text)
+
+
+# Then, we split data into training and testing sets
+X_train, X_test, y_train, y_test = train_test_split(
+    data['tweet'], data['label'], test_size=0.2, random_state=42, stratify=data['label']
+)
+
+# TF-IDF Vectorization
+vectorizer = TfidfVectorizer(max_features=5000, ngram_range=(1,3), stop_words=list(yoruba_stopwords))
+X_train_vec = vectorizer.fit_transform(X_train)
+X_test_vec = vectorizer.transform(X_test)
+
+# Train the Logistic Regression Model
+sentiment_model = LogisticRegression(max_iter=2000, solver='saga', multi_class='multinomial', class_weight='balanced')
+sentiment_model.fit(X_train_vec, y_train)
+
+# Save the Vectorizer to project path
+# str(Path(Path.cwd()/'sentiment'/'sentiment'/vectorizer.pkl'))
+with open('vectorizer.pkl', 'wb') as vec_file:
+    pickle.dump(vectorizer, vec_file)
+
+# Evaluate the Model
+y_pred = sentiment_model.predict(X_test_vec)
+
+# print("\nAccuracy:", accuracy_score(y_test, y_pred))
+# print('\n')
+# print(classification_report(y_test, y_pred, target_names=['Negative', 'Positive', 'Neutral']))
+
+# Save the trained model to project path
+# str(Path(Path.cwd()/'sentiment'/'sentiment_model.pkl'))
+with open('sentiment_model.pkl', 'wb') as model_file:
+    pickle.dump(sentiment_model, model_file)
+
+# print("\nSENTENCE ANALYSIS")
+# Loop to predict and print sentiment for each sentence using the hybrid function
 def app_pred(stream_sent:str):
     ''' 
     Predict sentiment for a given sentence using the hybrid model, mapping numerical output to sentiment labels.
@@ -130,3 +188,25 @@ def app_pred(stream_sent:str):
     else:
         sentiment_label = "Neutral"
     return sentiment_label
+                
+    # print(f"Review: '{sentence}'")
+    # print(f"Sentiment Prediction: {sentiment_label}")
+    # print("--------------------------------------------------")
+
+#New paragraph dataset
+paragraph_data = """Bí ìmọ̀ tí-kìí-ṣe-tẹ̀dá-ọmọ-ènìyàn (AI) ṣe ń gbòòrò sí i tí ó sì ń di tọ́rọ́-fọ́n-kalé káàkiri àgbáyé ní à ń lò wọ́n láti fi ṣẹ̀dá àwọn ohun èlò tí a fi ń ṣiṣẹ́ lójoojúmọ́,
+tí èyí sì ń mú kí ìgbé-ayé àti iṣẹ́ siṣẹ́ rọrùn fún àwọn ènìyàn.
+Bí ó ti lẹ̀ jẹ́ pé àwọn tí wọ́n ń lo ẹ̀rọ tí ó ń lò ìmọ̀ tí-kìí-ṣe-tẹ̀dá-ọmọ-ènìyàn ń pọ̀ síi lórílẹ̀ Áfíríkà lójoojúmọ́,
+ọ̀pọ̀lọpọ̀ àwọn aṣàmúlò ni kòì tíì le lo àwọn ẹ̀rọ náà ní èdè wọn.
+Tí à kò bá fi àwọn èdè bíi Soga kún àwọn èdè tí a ń lò láti ṣẹ̀dá àwọn ẹ̀rọ wọ̀nyí ọ̀kẹ́ àìmọye mílíọ̀nù ọmọ ilẹ̀ Adúláwọ̀ ni kò ní le kófà ọ̀pọ̀lọpọ̀ àǹfààní tí ó wà lára lílo ìmọ̀ tí-kìí-ṣe-tẹ̀dá-ọmọ-ènìyàn.
+Àìṣàfikún yìí yóò túbọ̀ mú kí àìdógba ìṣàmúlò ẹ̀rọ-ayélujára tí ó wà láàárín ilẹ̀ Áfíríkà àti àwọn àgbègbè mìíràn lágbàáyé peléke sí i.
+Ìdíwọ́ èdè lílo lórí ẹ̀rọ ayélujára le ṣe àkóbá fún ìdàgbàsókè ètò ọrọ̀ Ajé ọ̀pọ̀lọpọ̀ àwọn orílẹ̀èdè ilẹ̀ Adúláwọ̀ látàrí àìfàyègbà àwọn tí wọ́n sọ èdè abínibí wọn láti le gba iṣẹ́ tàbí ṣe káràkátà lórí ẹ̀rọ-ayélujára.
+Àìṣàfikún àwọn èdè abínibí ilẹ̀ Adúláwọ̀ nínú ìṣẹ̀dá àwọn ẹ̀rọ ìmọ̀-tí-kìí-ṣe-tẹ̀dá-ọmọ-ènìyàn tí a ń lò ní ilé-ìwé le ṣàkóbá fún ètò ẹ̀kọ́ ọ̀pọ̀lọpọ̀ orílẹ̀-èdè.
+Ẹ̀wẹ̀, ìwọ̀n ìlò ìmọ̀ tí-kìí-ṣe-tẹ̀dá-ọmọ-ènìyàn fún ẹ̀kọ́ ní gbogbo ilẹ̀ Adúláwọ̀ yì wà ní ìdá 12."""
+
+# print("\n PARAGRAPH ANALYSIS ")
+# pos_count, neg_count, sentiment = predict_paragraph(paragraph_data)
+# print(f"Total Positive Words: {pos_count}")
+# print(f"Total Negative Words: {neg_count}")
+# print(f"Overall Sentiment: {sentiment}")
+# print("--------------------------------------------------")
