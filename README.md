@@ -7,11 +7,30 @@ Hybrid Architecture: Integrates a comprehensive, hand-curated Yorùbá sentiment
 
 **Web Application:** A user-friendly Streamlit web app for real-time sentiment analysis of text or uploaded files. https://yoruba-sentiment-checker.streamlit.app/
 
-**Public Resources:** Provides a valuable public sentiment language model for Yorùbá to support further NLP research.
+**Public Resources:** Provides a valuable public sentiment lexicon and sentiment analysis language model for Yorùbá to support further NLP research.
 
 **Reproducible Research:** Complete code and methodology are provided for full transparency and reproducibility.
 
 **Installation & Usage**
+This demo assumes you are already familiar with python!
+Using the wildcard ('*') imports the following, to import one or more specific function, you can just call from any of the below mentioned:
+- vectorizer (This is the actual vectorizer)
+- app_pred (This is the function that does the sentiment analysis. It takes a string!)
+- sentiment_model (This is the trained model)
+- preprocess_text (This is a preprocessing function for Yorùbá texts.)
+- yoruba_stopwords (This is an iterable of stop words identified in the Yorùbá language)
+- positive_words (This is an iterable of words with positive connotations in the Yorùbá language)
+- negative_words (This is an iterable of words with negative connotations in the Yorùbá language)
+- neutral_words (This is an iterable of words with neutral connotations in the Yorùbá language)
+
+`pip install yorsent`
+
+`from yorsent import *`
+`text = 'Òru là ń ṣ'èkà, ẹni tí ó bá ṣe é lọ́sàn-án ò ní fi ara ire lọ.'`
+`sent = app_pred(text)`
+`print(sent)`
+
+
 
 **Clone the repository:**
 
@@ -20,12 +39,6 @@ bash
 git clone https://github.com/Kasaba6330/yoruba-sentiment-checker.git
 
 cd yoruba-sentiment-checker
-
-**Install dependencies:**
-
-bash
-
-pip install -r requirements.txt
 
 **Run the web application:**
 
@@ -43,6 +56,4 @@ Contributions, issues, and feature requests are welcome! Feel free to check the 
 
 **License**
 
-This project is licensed under the MIT License.
-
-
+This project is licensed under the Apache-2.0 License.
